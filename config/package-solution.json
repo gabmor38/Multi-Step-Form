@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "scw-v-2-client-side-solution",
+    "id": "a7bc5b6a-3235-4cc8-aa0e-95a8d85b6302",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.18.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "scw-v2 description"
+      },
+      "longDescription": {
+        "default": "scw-v2 description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "scw-v-2 Feature",
+        "description": "The feature that activates elements of the scw-v-2 solution.",
+        "id": "b8c42db8-b22a-49c9-9f44-8755a44d4342",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/scw-v-2.sppkg"
+  }
+}
