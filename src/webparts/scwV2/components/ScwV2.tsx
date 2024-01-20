@@ -30,23 +30,23 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       engDesc: '',
       frDesc: '',
       ownerList: [],
-      showModal: false
+      showModal: false,
+      invalidEmail: '',
+      requestingUser: ''
     }; 
   }
 
   public goToNextPage = (): void => {
 
     const nextPage = this.state.currentPage + 1;
-    const {commPurpose, engCommName, frCommName, ownerList, currentPage } = this.state;
-    const values = {commPurpose,engCommName,frCommName}
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, invalidEmail, requestingUser } = this.state;
+    const values = {commPurpose,engCommName,frCommName, engDesc, frDesc}
     
     console.log("nextPage", nextPage)
     
     const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
 
-    const requestorEmail = ownerList.find((email) => email === this.props.requestor);
-
-    const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1 && (ownerList.length === 0 || requestorEmail))
+    const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1 && (ownerList.length === 0 || requestingUser || invalidEmail))
     
     if(!showModal ) {
       this.setState({
@@ -90,15 +90,29 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   public getOwners = (users: []):void => {
 
     const ownersArray: string[] = [];
+    let isInvalidEmail: string = "";
+    let isRequestor: string = '';
 
     console.log("users", users);
 
     users.forEach(user => {
       ownersArray.push(user['secondaryText'])
+
+      if ( user['id'] === undefined) {
+        isInvalidEmail = user['secondaryText']
+      }
+
+      if( user['secondaryText'] === this.props.requestor) {
+        isRequestor = user['secondaryText']
+      }
     })
     
+   
+    
     this.setState({
-      ownerList: ownersArray
+      ownerList: ownersArray,
+      invalidEmail: isInvalidEmail,
+      requestingUser: isRequestor
     });
   }
 
@@ -189,7 +203,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
 
     console.log("commPurpose- state", this.state.commPurpose)
-    console.log("owners", this.state.ownerList)
+    console.log("owners", this.state.ownerList, this.state.requestingUser, this.state.invalidEmail)
 
     const sectionStackTokens: IStackTokens = { childrenGap: 5 };
     
@@ -208,7 +222,22 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
       </div>
 
-      {showModal && (<Modals prefLang={ this.props.prefLang } currentPage = { currentPage }  engName= { engCommName } commPurpose= { commPurpose } frCommName= { frCommName } shEngDesc= { engDesc } shFrDesc= { frDesc } ownerList= { ownerList } showModal={ showModal } openModal = { this.goToNextPage } onClose={ this.closeModal } /> )}
+      {showModal && (
+        <Modals prefLang={ this.props.prefLang } 
+        currentPage = { currentPage }  
+        engName= { engCommName } 
+        commPurpose= { commPurpose } 
+        frCommName= { frCommName } 
+        shEngDesc= { engDesc } 
+        shFrDesc= { frDesc } 
+        ownerList= { ownerList } 
+        invalidUser= {this.state.invalidEmail}
+        requestingUser = {this.state.requestingUser}
+        showModal={ showModal } 
+        openModal = { this.goToNextPage } 
+        onClose={ this.closeModal } 
+        /> 
+      )}
       {this.state.currentPage === 0 && (
         <>
           <div >CONTENT 1

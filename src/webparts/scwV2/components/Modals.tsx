@@ -11,10 +11,10 @@ interface IModalsProps {
   commPurpose: string;
   shEngDesc: string;
   shFrDesc: string;
-  invalidUser?: string;
   requestor?: string;
   ownerList: string[];
-
+  invalidUser: string;
+  requestingUser: string;
   showModal: boolean;
   currentPage: number;
   prefLang: string;
@@ -122,18 +122,10 @@ public strings = SelectLanguage(this.props.prefLang);
 
   public renderSecondPageMessage = ():string | JSX.Element => {
 
-    const { ownerList, requestor } = this.props;
+    const { ownerList, requestingUser, invalidUser } = this.props;
 
     //const invalidUserBold = "<strong>" + invalidUser + "</strong>";  //unvalid email need to be bold
-    let requestingUser = '';
-
-    for (let i = 0; i < ownerList.length; i++) {
-      console.log("O",ownerList[i])
-      if ( ownerList[i] === requestor) {
-        requestingUser = requestor
-      } 
-      
-    }
+   
    
 
     console.log(requestingUser)
@@ -155,6 +147,9 @@ public strings = SelectLanguage(this.props.prefLang);
      }
      else if (requestingUser) {
       message =`${this.strings.requestorUser }`
+     }
+     else if (invalidUser) {
+      message = "Invalid Email"
      }
 
 

@@ -7,5 +7,7 @@ export interface ISCWState {
   frDesc: string;
   ownerList: string[];
   showModal: boolean;
+  invalidEmail: string;
+  requestingUser: string;
 
 }
