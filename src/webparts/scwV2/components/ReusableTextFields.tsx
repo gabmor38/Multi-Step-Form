@@ -43,8 +43,6 @@ export default class ReusableTextFields extends React.Component<IReusableTextFie
     };
 
    
-
-    console.log("lineID", this.props.lineId);
     
     return (
     <>

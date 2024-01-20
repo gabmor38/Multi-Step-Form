@@ -32,6 +32,53 @@
     }
   }
 }
+.cancelIcon {
+  color: white;
+  background-color: transparent;
+  padding-top:5px;
+  float: 'right';
+  // font-weight: 900;
+}
+
+.cancelIcon:hover{
+  background-color: transparent;
+  color: white;
+//     font-weight: 900;
+}
+
+.cancelIcon:focus {
+  outline:#c0c0cc;
+}
+
+.close{
+  color: #B75915;
+  background-color: white;
+  border: none;
+  font-size: 18px;
+
+  &:hover {
+      background-color: white;
+      color: #FF510F;
+      font-weight: bolder;
+      border:1px solid #FF510F ; 
+  }
+  
+}
+
+.close:focus {
+  
+      outline-color: #FF510F ;
+
+}
+
+.horizontalLine {
+  border-bottom: 1px solid #605E5C;
+  width: 100%;
+}
+
+.modalContent {
+  font-size: 16px;
+}
 
 .maintTitle {
   font-size: 16px;

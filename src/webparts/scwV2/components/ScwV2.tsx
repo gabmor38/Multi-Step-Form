@@ -9,7 +9,7 @@ import ReusableButton  from './ReusableButton'
 import { IStackTokens, Stack } from '@fluentui/react';
 import ReusableTextFields from './ReusableTextFields';
 import ReusablePeoplePicker from './ReusablePeoplePicker';
-import { inputValidation } from './InputValidation';
+import { fieldValidations, inputValidation, validateSpecialCharFields } from './InputValidation';
 import { SelectLanguage } from './SelectLanguage';
 import styles from './ScwV2.module.scss';
 import Modals from './Modals';
@@ -36,13 +36,29 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
   public goToNextPage = (): void => {
 
-    const nextPage = this.state.currentPage + 1
+    const nextPage = this.state.currentPage + 1;
+    const {commPurpose, engCommName, frCommName, ownerList, currentPage } = this.state;
+    const values = {commPurpose,engCommName,frCommName}
+    
     console.log("nextPage", nextPage)
- 
-    this.setState({
-      currentPage: nextPage
-    })
+    
+    const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
 
+    const requestorEmail = ownerList.find((email) => email === this.props.requestor);
+
+    const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1 && (ownerList.length === 0 || requestorEmail))
+    
+    if(!showModal ) {
+      this.setState({
+        currentPage: nextPage,
+        
+      })
+
+    } else {
+      this.setState({
+        showModal: true
+      })
+    }
  
   }
 
@@ -60,9 +76,6 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   public onChangeTextField = (event: React.ChangeEvent<HTMLInputElement>, value: string):void => {
     const name = event.target.name;
     const inputValue = value;
-
-    console.log("name",name)
-    console.log("value",inputValue)
 
     this.handleSideLineErrorValidation(name, inputValue);
 
@@ -91,14 +104,12 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
   public handleSideLineErrorValidation = (eventName:string, value:string ) => {
 
-    console.log("eventname:", eventName, "value:", value)
-
     const charAllowed = /[^a-zA-Z0-9ÀÁÂÃÄÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïòóôõöùúûüÆŒœæŸÿ'\s]/.test(value);
 
     
     const addErrorBorder = (lineId: string) => {
       const getlineId = document.getElementById(lineId)
-      console.log("lineID", lineId)
+      
       if (getlineId){
         getlineId.classList.add(styles.errorBorder);
       }
@@ -197,7 +208,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
       </div>
 
-      <Modals prefLang={ this.props.prefLang } currentPage = { currentPage }  engName= { engCommName } commPurpose= { commPurpose } frCommName= { frCommName } shEngDesc= { engDesc } shFrDesc= { frDesc } ownerList= { ownerList } showModal={ showModal } openModal = { this.goToNextPage } onClose={ this.closeModal } /> 
+      {showModal && (<Modals prefLang={ this.props.prefLang } currentPage = { currentPage }  engName= { engCommName } commPurpose= { commPurpose } frCommName= { frCommName } shEngDesc= { engDesc } shFrDesc= { frDesc } ownerList= { ownerList } showModal={ showModal } openModal = { this.goToNextPage } onClose={ this.closeModal } /> )}
       {this.state.currentPage === 0 && (
         <>
           <div >CONTENT 1
@@ -210,7 +221,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     title={'Community Purpose'}
                     label={'these are instructions'}
                     instructions={"instructions"}
-                    description={`0/500`}
+                    description={`${commPurpose.length}/500`}
                     multiline
                     defaultValue={this.state.commPurpose}
                     validateOnLoad={false}
@@ -227,14 +238,14 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     title={'English Community'}
                     label={'these are instructions'}
                     instructions={"instructions"}
-                    description={`0/100`}
+                    description={`${engCommName.length}/100`}
                     multiline
                     defaultValue={engCommName}
                     validateOnLoad={false}
                     maxLength={100}
                     rows={1}
                     onChange={this.onChangeTextField}
-                    onGetErrorMessage={(engCommName) => inputValidation(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                    onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   
                 />
                 <ReusableTextFields
@@ -244,14 +255,14 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     title={'French Community Name'}
                     label={'these are instructions'}
                     instructions={"instructions"}
-                    description={`0/100`}
+                    description={`${frCommName.length}/100`}
                     multiline
                     defaultValue={frCommName}
                     validateOnLoad={false}
                     maxLength={500}
                     rows={1}
                     onChange={this.onChangeTextField}
-                    onGetErrorMessage={(frCommName) => inputValidation(frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                    onGetErrorMessage={(frCommName) => validateSpecialCharFields (frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   
                 />
                 <ReusableTextFields
@@ -261,7 +272,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     title={'Short English Description'}
                     label={'these are instructions'}
                     instructions={"instructions"}
-                    description={`0/80`}
+                    description={`${engDesc.length}/80`}
                     multiline
                     defaultValue={engDesc}
                     validateOnLoad={false}
@@ -278,7 +289,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     title={'French Description'}
                     label={'these are instructions'}
                     instructions={"instructions"}
-                    description={`0/80`}
+                    description={`${frDesc.length}/80`}
                     multiline
                     defaultValue={frDesc}
                     validateOnLoad={false}
@@ -336,7 +347,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   title={'Community Purpose'}
                   label={'these are instructions'}
                   instructions={"instructions"}
-                  description={`0/500`}
+                  description={`${commPurpose.length}/500`}
                   multiline
                   defaultValue={commPurpose}
                   validateOnLoad={false}
@@ -353,7 +364,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   title={'English Community'}
                   label={'these are instructions'}
                   instructions={"instructions"}
-                  description={`0/100`}
+                  description={`${engCommName.length}/100`}
                   multiline
                   defaultValue={engCommName}
                   validateOnLoad={false}
@@ -369,14 +380,14 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   title={'French Community Name'}
                   label={'these are instructions'}
                   instructions={"instructions"}
-                  description={`0/100`}
+                  description={`${frCommName.length}/100`}
                   multiline
                   defaultValue={frCommName}
                   validateOnLoad={false}
                   maxLength={500}
                   rows={1}
                   onChange={this.onChangeTextField}
-                  onGetErrorMessage={(frCommName) => inputValidation(frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  onGetErrorMessage={(frCommName) => validateSpecialCharFields (frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
               />
               <ReusableTextFields
                   id={'engDesc'}
@@ -385,14 +396,14 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   title={'Short English Description'}
                   label={'these are instructions'}
                   instructions={"instructions"}
-                  description={`0/80`}
+                  description={`${engDesc.length}/80`}
                   multiline
                   defaultValue={engDesc}
                   validateOnLoad={false}
                   maxLength={80}
                   rows={1}
                   onChange={this.onChangeTextField}
-                  onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  onGetErrorMessage={(engDesc) => validateSpecialCharFields(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                 
               />
               <ReusableTextFields
@@ -402,7 +413,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   title={'French Description'}
                   label={'these are instructions'}
                   instructions={"instructions"}
-                  description={`0/80`}
+                  description={`${frDesc.length}/80`}
                   multiline
                   defaultValue={frDesc}
                   validateOnLoad={false}
