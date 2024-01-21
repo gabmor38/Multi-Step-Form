@@ -11,5 +11,7 @@ export interface ISCWState {
   requestingUser: string;
   isLoading: boolean;
   validationStatus: number,
+  showCallout: boolean;
+  targetId: string;
 
 }

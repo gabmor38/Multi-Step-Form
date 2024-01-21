@@ -37,6 +37,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       requestingUser: '',
       isLoading: false,
       validationStatus: 0,
+      showCallout: false,
+      targetId: ''
     }; 
   }
 
