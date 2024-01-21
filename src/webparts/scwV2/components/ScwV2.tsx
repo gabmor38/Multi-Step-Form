@@ -15,6 +15,7 @@ import { SelectLanguage } from './SelectLanguage';
 import styles from './ScwV2.module.scss';
 import Modals from './Modals';
 import { AadHttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
+import Callouts from './Callouts';
 
 
 export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
@@ -304,7 +305,24 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     this.setState({
         showModal: false,
     })
-}
+  }
+
+  public isCalloutVisible = ():void => {
+
+    this.setState(prevState => ({
+        showCallout: !prevState.showCallout,
+        
+    }));
+
+  };
+
+  public getElementId = (id: string): void => {
+
+    this.setState({
+        targetId: id
+    });
+
+  };
 
   
   public render(): React.ReactElement<IScwV2Props> {
@@ -323,7 +341,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       {id: 3, title: "Step 3", description: "Step 1 description"}
     ]
 
-    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal} = this.state
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state
     
 
     return (
@@ -332,6 +350,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       <div>
         <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
       </div>
+      {  showCallout && <Callouts prefLang={ this.props.prefLang } showCallout={ showCallout }  targetId= { targetId } openCallout = {this.isCalloutVisible} /> }
 
       {showModal && (
         <Modals prefLang={ this.props.prefLang } 
@@ -497,6 +516,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   validateOnLoad={false}
                   maxLength={500}
                   rows={3}
+                  currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                 
@@ -514,6 +534,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   validateOnLoad={false}
                   maxLength={100}
                   rows={1}
+                  currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
               />
@@ -530,6 +551,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   validateOnLoad={false}
                   maxLength={500}
                   rows={1}
+                  currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(frCommName) => validateSpecialCharFields (frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
               />
@@ -546,6 +568,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   validateOnLoad={false}
                   maxLength={80}
                   rows={1}
+                  currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                 
@@ -563,6 +586,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   validateOnLoad={false}
                   maxLength={80}
                   rows={1}
+                  currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(frDesc) => inputValidation(frDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
               />
@@ -576,6 +600,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                 ownerList={ ownerList}
                 defaultSelectedUsers={this.state.ownerList}
                 onChangeGetOwners={this.getOwners}
+                currentPage={currentPage}
                 
               />
               </Stack>
