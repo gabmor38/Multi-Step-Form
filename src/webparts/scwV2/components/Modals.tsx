@@ -120,44 +120,67 @@ public strings = SelectLanguage(this.props.prefLang);
 
   }
 
+  
   public renderSecondPageMessage = ():string | JSX.Element => {
 
     const { ownerList, requestingUser, invalidUser } = this.props;
 
-    //const invalidUserBold = "<strong>" + invalidUser + "</strong>";  //unvalid email need to be bold
+    const invalidUserBold = "<strong>" + invalidUser + "</strong>";  //unvalid email need to be bold
    
-   
+    const messageValues : any [] = [
 
-    console.log(requestingUser)
+      {name: 'requestingUser', message: `${this.strings.requestorUser }`, value: requestingUser},
+      {name: 'invalidEmailUser', message: `${this.strings.invalidEmail} ${invalidUserBold} ${this.strings.is_not_valid}`, value: this.props.invalidUser}
 
-    // const secondPageValues: any[] = [
-    //   { name: 'invalidEmail',   text: `${this.strings.invalidEmail} ${invalidUserBold} ${this.strings.is_not_valid}`, value: `${invalidUser}` },
-    //   { name: 'requestorUser', text: `${this.strings.requestorUser }`, value: `${requestorEmail}` },
-    //   { name: 'isBlank',        text: `You must add another owner`, value: `${ownerList.length}`}
-    // ];
+    ]
 
-    //const resultValues: string[] =[];
+    const resultValues: string[] =[];
     //const comma = `<span style=fontWeight:normal>, </span>`;
     let message = "";
-    //let reviewPageMessage = "";
 
+    messageValues.forEach((item) => {
+      console.log(item.value)
+      if (item.value !== '') {
+        resultValues.push(item.message); 
+
+        if(resultValues.length > 1) {
+          
+          const tolower = resultValues.slice(-1)[0];
+          const combinedMessage = resultValues.slice(0, -1).join(`,`) + `${this.strings.and}` + tolower.charAt(0).toLowerCase() + tolower.slice(1)//on last slice only lower first character
+          
+          console.log("CM",combinedMessage);
+          message = combinedMessage;
+         }  
+         else  if(resultValues.length === 1) { 
+          console.log("res", resultValues)
+          message = resultValues[0];
+         }
+      }
+
+    })
 
      if(ownerList.length === 0 ){
       message = `You must add another owner`;
      }
-     else if (requestingUser) {
-      message =`${this.strings.requestorUser }`
-     }
-     else if (invalidUser) {
-      message = "Invalid Email"
-     }
-
-
 
       return message
 
+  }
 
+  public renderCombinedMessage = (): JSX.Element | string => {
+    const firstPageMessage = this.renderFirstPageMessage();
+    const secondPageMessage = this.renderSecondPageMessage();
+  
+    const combinedMessage = (
+      <>
+        {firstPageMessage}       
+        
+        {secondPageMessage} 
 
+      </>
+    );
+  
+    return combinedMessage;
   }
 
   

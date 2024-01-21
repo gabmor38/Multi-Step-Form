@@ -194,10 +194,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         showModal: false,
     })
 }
-  
 
-  
-  
   
   public render(): React.ReactElement<IScwV2Props> {
 
