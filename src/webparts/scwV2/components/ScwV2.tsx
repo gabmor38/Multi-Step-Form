@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,13 +7,14 @@ import type { IScwV2Props } from './IScwV2Props';
 import type { ISCWState } from './ISCWV2State';
 import { ProgressStepsIndicator } from '@pnp/spfx-controls-react/lib/ProgressStepsIndicator';
 import ReusableButton  from './ReusableButton'
-import { IStackTokens, Stack } from '@fluentui/react';
+import { ISpinnerStyles, IStackTokens, Spinner, SpinnerSize, Stack } from '@fluentui/react';
 import ReusableTextFields from './ReusableTextFields';
 import ReusablePeoplePicker from './ReusablePeoplePicker';
 import { fieldValidations, inputValidation, validateSpecialCharFields } from './InputValidation';
 import { SelectLanguage } from './SelectLanguage';
 import styles from './ScwV2.module.scss';
 import Modals from './Modals';
+import { AadHttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
 
 
 export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
@@ -32,7 +34,9 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       ownerList: [],
       showModal: false,
       invalidEmail: '',
-      requestingUser: ''
+      requestingUser: '',
+      isLoading: false,
+      validationStatus: 0,
     }; 
   }
 
@@ -46,7 +50,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     
     const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
 
-    const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1 && (ownerList.length === 0 || requestingUser || invalidEmail))
+    const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1  && (ownerList.length === 0 || requestingUser || invalidEmail))
     
     if(!showModal ) {
       this.setState({
@@ -85,6 +89,111 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     });
 
   }
+
+  public escapeQuotes = (str:any) => {
+    console.log("string",str)
+    return  str.replace(/"/g, '\\"');
+  };
+  
+
+  public successMessage = (): void =>  { 
+
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, invalidEmail, requestingUser } = this.state;
+    const values = {commPurpose,engCommName,frCommName, engDesc, frDesc}
+    
+    
+    const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
+
+    const showModal = isLessThanMinLength || hasSpecialChar || ownerList.length === 0 || requestingUser || invalidEmail;
+   
+    
+    if (showModal) {
+        
+      this.setState({ showModal: true });
+    }
+    else {
+
+        const functionUrl = "  ";
+        const requestHeaders: Headers = new Headers();
+        requestHeaders.append("Content-type", "application/json");
+        requestHeaders.append("Cache-Control", "no-cache");
+        
+        const owner1 = [...ownerList, this.props.requestor].join(',');
+
+
+      
+        const postOptions: IHttpClientOptions = {
+            headers: requestHeaders,
+            body: `
+            {
+                "SpaceName": "${engCommName}",
+                "SpaceNameFR": "${frCommName}",
+                "Owner1": "${owner1}",
+                "SpaceDescription": "${this.escapeQuotes(engDesc)}",
+                "SpaceDescriptionFR": "${this.escapeQuotes(frDesc)}",
+                "BusinessJustification":"${this.escapeQuotes(commPurpose)}",
+                "TeamPurpose":"${this.escapeQuotes(commPurpose)}",
+                "TemplateTitle": "Generic",
+                "RequesterName": "${this.props.context.pageContext.user.displayName}",
+                "RequesterEmail": "${this.props.requestor}",
+                "SecurityCategory": "unclassified",
+                "Status": "Submitted",
+                
+            }`
+        };
+
+        console.log("BODY", postOptions.body);
+
+        
+        let responseText: string = "";
+
+        // use aad authentication
+
+
+        this.setState({ isLoading: true }, () => {
+       
+            
+          this.props.context.aadHttpClientFactory
+          .getClient(" ")
+          .then((client: AadHttpClient) => {
+           
+            client.post(functionUrl, AadHttpClient.configurations.v1, postOptions)
+            .then((response: HttpClientResponse) => {
+              console.log(`Status code: ${response.status}`);
+
+              if ( response.status) {
+
+                this.setState({
+                    currentPage: currentPage + 1,
+                    isLoading: false,
+                    validationStatus: response.status,
+                })
+              } 
+              
+              response.json().then((responseJSON: JSON) => {
+                responseText = JSON.stringify(responseJSON);
+                console.log("respond is ", responseText);
+                if (response.ok) {
+                
+                  console.log("response OK");
+                } else {
+                    
+                console.log("Response error");
+
+                }
+              })
+              .catch((response: any) => {
+                
+                const errMsg: string = `WARNING - error when calling URL ${functionUrl}. Error = ${response.message}`;
+                console.log("err is ", errMsg);
+              });
+            });
+          });
+        });
+       
+        
+    }
+}
 
 
   public getOwners = (users: []):void => {
@@ -204,6 +313,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
     const sectionStackTokens: IStackTokens = { childrenGap: 5 };
     
+    const labelSpinnerStyles: Partial<ISpinnerStyles> = { root: { padding: 20 } };
+    
     const progressSteps = [
       {id: 1, title: "Step 1", description: "Step 1 description"},
       {id: 2, title: "Step 2", description: "Step 1 description"},
@@ -215,6 +326,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
     return (
       <>
+     
       <div>
         <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
       </div>
@@ -235,6 +347,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         onClose={ this.closeModal } 
         /> 
       )}
+     
       {this.state.currentPage === 0 && (
         <>
           <div >CONTENT 1
@@ -360,7 +473,10 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         </>
       
       )} 
+      {this.state.isLoading &&
+        (<Spinner label={ this.strings.submitting_your_information } labelPosition="right"   size={ SpinnerSize.large } styles={labelSpinnerStyles}/>)
 
+      }
       {this.state.currentPage === 2 && (
         <>
           <div>CONTENT 3</div>
@@ -397,7 +513,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   maxLength={100}
                   rows={1}
                   onChange={this.onChangeTextField}
-                  onGetErrorMessage={(engCommName) => inputValidation(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
               />
               <ReusableTextFields
                   id={'frCommName'}
@@ -429,7 +545,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   maxLength={80}
                   rows={1}
                   onChange={this.onChangeTextField}
-                  onGetErrorMessage={(engDesc) => validateSpecialCharFields(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                 
               />
               <ReusableTextFields
@@ -465,7 +581,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
           <div>
               <Stack horizontal horizontalAlign='space-between'>
                 <ReusableButton text={'previous'} onClick={this.goToPreviousPage}/>
-                <ReusableButton text={'next'} onClick={this.goToNextPage}/>
+                <ReusableButton text={'next'} onClick={this.successMessage}/>
               </Stack>
           </div>
         </>

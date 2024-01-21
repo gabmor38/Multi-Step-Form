@@ -9,5 +9,7 @@ export interface ISCWState {
   showModal: boolean;
   invalidEmail: string;
   requestingUser: string;
+  isLoading: boolean;
+  validationStatus: number,
 
 }

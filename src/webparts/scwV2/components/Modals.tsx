@@ -169,18 +169,49 @@ public strings = SelectLanguage(this.props.prefLang);
 
   public renderCombinedMessage = (): JSX.Element | string => {
     const firstPageMessage = this.renderFirstPageMessage();
-    const secondPageMessage = this.renderSecondPageMessage();
-  
-    const combinedMessage = (
-      <>
-        {firstPageMessage}       
-        
-        {secondPageMessage} 
 
-      </>
+    const { ownerList, requestingUser, invalidUser } = this.props;
+
+    const invalidUserBold = "<strong>" + invalidUser + "</strong>";
+
+    const reviewOwnerMessages : any [] = [
+
+      {name: 'requestingUser', message: `${this.strings.requestorUser }`, value: requestingUser},
+      {name: 'invalidEmailUser', message: `${this.strings.invalidEmail} ${invalidUserBold} ${this.strings.is_not_valid}`, value: this.props.invalidUser}
+
+    ]
+
+    const ownerResults: string[] =[];
+
+    reviewOwnerMessages.forEach((item) => {
+      if(item.value !== '') {
+        ownerResults.push(item.message);
+      }
+
+    } )
+
+    if(ownerList.length === 0) {
+      ownerResults.push("add another owner")
+    }
+
+
+    return (
+      <>
+      {firstPageMessage}   
+      
+        <>
+        {ownerResults.length !== 0 && (<h3><strong>Owners</strong></h3>)}
+        {ownerResults.map((item, index) => (
+        <ul key={index}>
+          <li>{item}</li>
+        </ul>
+      ))}
+        </>
+
+    </>
     );
-  
-    return combinedMessage;
+
+
   }
 
   
@@ -189,7 +220,7 @@ public strings = SelectLanguage(this.props.prefLang);
 
     const firstPageErrorMessage = this.renderFirstPageMessage();
     const secondPageErrorMessage = this.renderSecondPageMessage();
-    // const thirdPageErrorMessage = this.renderCombinedMessage();
+    const thirdPageErrorMessage = this.renderCombinedMessage();
 
     const iconStyles: Partial<IIconStyles> = { 
       root: { fontSize: '70px',
@@ -245,14 +276,14 @@ public strings = SelectLanguage(this.props.prefLang);
                 </Stack>
               )}
 
-              {/* {this.props.currentPage === 2 && (
+              {this.props.currentPage === 2 && (
                 <>
                <Stack>
                <h3>Please review the following fields</h3>
                   <p className={styles.modalContent}> {thirdPageErrorMessage}</p>
                 </Stack>
                 </>
-              )} */}
+              )}
               
             </div>
             <div style={this.modalStyle.footer}>
