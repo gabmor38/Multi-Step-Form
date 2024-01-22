@@ -15,6 +15,8 @@ requestor?: string;
 invalidEmail?: string;
 defaultSelectedUsers: string[];
 onChangeGetOwners?:(values: []) => void;
+isCalloutVisible?: () => void ;
+getTargetId?: (event: any) => void ;
   
 }
 

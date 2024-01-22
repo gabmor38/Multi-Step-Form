@@ -19,7 +19,10 @@ interface IReusableTextFieldsProps {
   onChange?: (event:React.FormEvent<HTMLInputElement | HTMLTextAreaElement> , value: string) => void;
   onGetErrorMessage?:(value:string) => string |JSX.Element |undefined;
   handleSideLineErrorValidation?:(eventName: string, value: string) => void;
-  showCalloutVisible?:(event: any ) => void ;
+  isCalloutVisible?: () => void ;
+  getTargetId?: (event: any) => void ;
+  targetId?: string;
+  buttonId?: string;
   
 }
 
@@ -57,14 +60,14 @@ export default class ReusableTextFields extends React.Component<IReusableTextFie
     return (
     <>
       <div id={this.props.lineId}>
-        <Stack>
-          <Label>
+        <Stack horizontal verticalAlign='baseline'>
+          <Label  style={{fontWeight:'700'}} >
             <span style={{color:'red'}}>*</span>
             {this.props.title}
-          </Label>
           {this.props.currentPage === 2 && 
-            (<span><IconButton id={this.props.id} styles={ iconStyles } iconProps={infoIcon} onClick={this.props.showCalloutVisible}/></span>)
+            (<span><IconButton id={this.props.id} styles={ iconStyles } iconProps={infoIcon} onClick={this.props.getTargetId}/></span>)
           }
+          </Label>
         </Stack>
         <TextField {...this.props} styles={charCountStyles.characterLimitStyle}
         />

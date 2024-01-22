@@ -219,8 +219,6 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       }
     })
     
-   
-    
     this.setState({
       ownerList: ownersArray,
       invalidEmail: isInvalidEmail,
@@ -307,22 +305,27 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     })
   }
 
+  public getButtonID = (event: any): void => {
+    const buttonId = event.currentTarget.id;
+
+    console.log("ID",buttonId);
+
+    this.setState({
+      targetId: buttonId
+    });
+
+    this.isCalloutVisible()
+ 
+  }
+
   public isCalloutVisible = ():void => {
 
     this.setState(prevState => ({
         showCallout: !prevState.showCallout,
         
     }));
-
   };
 
-  public getElementId = (id: string): void => {
-
-    this.setState({
-        targetId: id
-    });
-
-  };
 
   
   public render(): React.ReactElement<IScwV2Props> {
@@ -350,7 +353,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       <div>
         <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
       </div>
-      {  showCallout && <Callouts prefLang={ this.props.prefLang } showCallout={ showCallout }  targetId= { targetId } openCallout = {this.isCalloutVisible} /> }
+      
 
       {showModal && (
         <Modals prefLang={ this.props.prefLang } 
@@ -500,6 +503,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       }
       {this.state.currentPage === 2 && (
         <>
+        {  showCallout && <Callouts prefLang={ this.props.prefLang } showCallout={ showCallout }  targetId= { targetId } openCallout = { this.isCalloutVisible} /> }
           <div>CONTENT 3</div>
           <div>
             <Stack tokens={sectionStackTokens}>
@@ -519,7 +523,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
               />
               <ReusableTextFields
                   id={'engCommName'}
@@ -537,7 +542,10 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
               />
+
               <ReusableTextFields
                   id={'frCommName'}
                   lineId={'frCommName'}
@@ -554,6 +562,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(frCommName) => validateSpecialCharFields (frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
               />
               <ReusableTextFields
                   id={'engDesc'}
@@ -571,10 +581,11 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
               />
               <ReusableTextFields
-                  id={'cfrDesc'}
+                  id={'frDesc'}
                   lineId={'frDesc'}
                   name={'frDesc'}
                   title={'French Description'}
@@ -589,6 +600,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   currentPage={currentPage}
                   onChange={this.onChangeTextField}
                   onGetErrorMessage={(frDesc) => inputValidation(frDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
               />
 
               <ReusablePeoplePicker 
@@ -601,7 +614,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                 defaultSelectedUsers={this.state.ownerList}
                 onChangeGetOwners={this.getOwners}
                 currentPage={currentPage}
-                
+                isCalloutVisible={ this.isCalloutVisible}
+                 getTargetId={this.getButtonID}
               />
               </Stack>
             </div>

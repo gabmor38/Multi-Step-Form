@@ -30,21 +30,18 @@ export default class Callouts extends React.Component<ICalloutProps> {
     if ( targetId === 'commPurpose' ) {
       message = `${ this.strings.commPurpose_desc } <br/> ${ this.strings.commPurpose_Instruction}`
     }
-    else if ( targetId === 'engName' ) {
+    else if ( targetId === 'engCommName' ) {
       message = `${ this.strings.engName_desc } <br/> ${ this.strings.engName_Instruction }`
     }
-    else if ( targetId === 'FrCommName' ) {
+    else if ( targetId === 'frCommName' ) {
       message = `${ this.strings.frCommName_desc } <br/> ${ this.strings.frCommName_Instruction}`
     }
-    else if ( targetId === 'shEngDesc' ) {
+    else if ( targetId === 'engDesc' ) {
       message = `${ this.strings.shEngDesc_desc } <br/> ${ this.strings.shEngDesc_Instruction}` 
     }
-    else if ( targetId === 'shFrDesc' ) {
+    else if ( targetId === 'frDesc' ) {
       message = `${ this.strings.shFrDesc_desc } <br/> ${ this.strings.shFrDesc_Instruction}`
     }
-    // else if ( targetId === 'classification' ) {
-    //   message = `${ this.strings.community_classification_desc } <br/><br/> ${this.strings.community_classification_link}`
-    // }
     else if ( targetId === 'owners' ) {
       message = `${this.strings.owners_instruction_Callout}`
     }
@@ -61,31 +58,24 @@ export default class Callouts extends React.Component<ICalloutProps> {
     if ( targetId === 'commPurpose' )  {
       title = `${ this.strings.commPurpose_title }`
     }
-    else if ( targetId === 'engName' ) {
+    else if ( targetId === 'engCommName' ) {
       title = `${ this.strings.engName_title }`
     }
-    else if ( targetId === 'FrCommName' ) {
+    else if ( targetId === 'frCommName' ) {
       title = `${ this.strings.frCommName_title }`
     }
-    else if ( targetId === 'shEngDesc' ) {
+    else if ( targetId === 'engDesc' ) {
       title = `${ this.strings.shEngDesc_title }`
     }
-    else if ( targetId === 'shFrDesc' ) {
+    else if ( targetId === 'frDesc' ) {
       title = `${ this.strings.shFrDesc_title }`
     }
-    // else if ( targetId === 'classification' ) {
-    //   title = ` ${ this.strings.community_classification}`
-    // }
     else if ( targetId === 'owners' ) {
       title = `${this.strings.owners}`
     }
-    // else if ( targetId === 'members' ) {
-    //   title = `${this.strings.members}`
-    // }
 
     return title
   }
-
 
   
 
@@ -133,6 +123,7 @@ export default class Callouts extends React.Component<ICalloutProps> {
       backgroundColor:  "#106EBE",
 
     },
+
     buttons: {
       width:'98%',
       padding:'10px',
@@ -159,7 +150,7 @@ export default class Callouts extends React.Component<ICalloutProps> {
 
             <div className={stylesCallout.heading}>
               <Stack horizontal horizontalAlign="space-between" verticalAlign="center" className={ stylesCallout.title }>
-                <Text>{ this.getTitles() }</Text>
+                <Text style={{color: 'white'}}>{ this.getTitles() }</Text>
                 <IconButton
                   aria-Label=  { this.strings.close }
                   className={ styles.cancelIcon }
