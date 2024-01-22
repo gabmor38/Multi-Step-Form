@@ -3,6 +3,7 @@ import * as React from 'react';
 import { SelectLanguage } from './SelectLanguage';
 import { IIconStyles, Icon, IconButton, Modal, Stack, StackItem } from '@fluentui/react';
 import styles from './ScwV2.module.scss';
+import parse from 'html-react-parser';
 
 
 interface IModalsProps {
@@ -149,7 +150,7 @@ public strings = SelectLanguage(this.props.prefLang);
           const combinedMessage = resultValues.slice(0, -1).join(`,`) + `${this.strings.and}` + tolower.charAt(0).toLowerCase() + tolower.slice(1)//on last slice only lower first character
           
           console.log("CM",combinedMessage);
-          message = combinedMessage;
+          message = `${parse(combinedMessage)}`;
          }  
          else  if(resultValues.length === 1) { 
           console.log("res", resultValues)
@@ -176,8 +177,8 @@ public strings = SelectLanguage(this.props.prefLang);
 
     const reviewOwnerMessages : any [] = [
 
-      {name: 'requestingUser', message: `${this.strings.requestorUser }`, value: requestingUser},
-      {name: 'invalidEmailUser', message: `${this.strings.invalidEmail} ${invalidUserBold} ${this.strings.is_not_valid}`, value: this.props.invalidUser}
+      {name: 'requestingUser', message: `${this.strings.invite_yourself} ${this.strings.please_remove_your_name}`, value: requestingUser},
+      {name: 'invalidEmailUser', message: parse(`${this.strings.isInvalidEmail} ${invalidUserBold}`), value: this.props.invalidUser}
 
     ]
 
@@ -191,7 +192,7 @@ public strings = SelectLanguage(this.props.prefLang);
     } )
 
     if(ownerList.length === 0) {
-      ownerResults.push("add another owner")
+      ownerResults.push(`${this.strings.blankField} ${this.strings.please_add_another_owner}`)
     }
 
 

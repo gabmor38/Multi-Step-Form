@@ -7,16 +7,15 @@ import type { IScwV2Props } from './IScwV2Props';
 import type { ISCWState } from './ISCWV2State';
 import { ProgressStepsIndicator } from '@pnp/spfx-controls-react/lib/ProgressStepsIndicator';
 import ReusableButton  from './ReusableButton'
-import { ISpinnerStyles, IStackTokens, Spinner, SpinnerSize, Stack } from '@fluentui/react';
+import { ISpinnerStyles, IStackTokens, Spinner, SpinnerSize, Stack} from '@fluentui/react';
 import ReusableTextFields from './ReusableTextFields';
 import ReusablePeoplePicker from './ReusablePeoplePicker';
-import { fieldValidations, inputValidation, validateSpecialCharFields } from './InputValidation';
+import { fieldValidations, inputValidation, validateOwnerField, validateSpecialCharFields } from './InputValidation';
 import { SelectLanguage } from './SelectLanguage';
 import styles from './ScwV2.module.scss';
 import Modals from './Modals';
 import { AadHttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
 import Callouts from './Callouts';
-
 
 export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
@@ -218,6 +217,18 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         isRequestor = user['secondaryText']
       }
     })
+
+    const getLineId = document.getElementById('owners');
+
+    if(getLineId) {
+      if(ownersArray.length === 0  || isInvalidEmail || isRequestor){
+        getLineId.classList.add(styles.errorBorder);
+      }
+      else {
+        getLineId.classList.remove(styles.errorBorder);
+      }
+    }
+
     
     this.setState({
       ownerList: ownersArray,
@@ -227,6 +238,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   }
 
   public handleSideLineErrorValidation = (eventName:string, value:string ) => {
+    console.log("eventname:",eventName, "value",value)
 
     const charAllowed = /[^a-zA-Z0-9ÀÁÂÃÄÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïòóôõöùúûüÆŒœæŸÿ'\s]/.test(value);
 
@@ -281,18 +293,11 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   
       case "frDesc":
         if (value.length < 5) {
-          addErrorBorder("rDesc");
+          addErrorBorder("frDesc");
         } else {
           removeErrorBorder("frDesc");
         }
         break;
-     case "owners":
-            if (!value) {
-              addErrorBorder("owners");
-            } else {    
-              removeErrorBorder("owners");
-            }
-            break;
   
       default:
         break;
@@ -327,6 +332,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   };
 
 
+
+
   
   public render(): React.ReactElement<IScwV2Props> {
 
@@ -337,15 +344,16 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     const sectionStackTokens: IStackTokens = { childrenGap: 5 };
     
     const labelSpinnerStyles: Partial<ISpinnerStyles> = { root: { padding: 20 } };
+
     
     const progressSteps = [
-      {id: 1, title: "Step 1", description: "Step 1 description"},
-      {id: 2, title: "Step 2", description: "Step 1 description"},
-      {id: 3, title: "Step 3", description: "Step 1 description"}
+      {id: 1, title: "Details", description: "Details"},
+      {id: 2, title: "Owners", description: "Owners"},
+      {id: 3, title: "Review & Submit", description: "Review & Submit"}
     ]
 
-    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state
-    
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state;
+    // const currentUser: string | undefined = this.props.requestor;
 
     return (
       <>
@@ -446,7 +454,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   
                 />
                 <ReusableTextFields
-                    id={'cfrDesc'}
+                    id={'frDesc'}
                     lineId={'frDesc'}
                     name={'frDesc'}
                     title={'French Description'}
@@ -478,7 +486,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
           <div>CONTENT 2</div>
           <div>
             <ReusablePeoplePicker 
-              id={'Owner1'}
+              id={'owners'}
               title={'Owners'}
               instructions={'instructions for peoplepicker'}
               lineId={'owners'}
@@ -603,25 +611,30 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
               />
-
-              <ReusablePeoplePicker 
-                id={'Owner1'}
-                title={'Owners'}
-                instructions={'instructions for peoplepicker'}
-                lineId={'owners'}
-                context={this.props.context}
-                ownerList={ ownerList}
-                defaultSelectedUsers={this.state.ownerList}
-                onChangeGetOwners={this.getOwners}
-                currentPage={currentPage}
-                isCalloutVisible={ this.isCalloutVisible}
-                 getTargetId={this.getButtonID}
-              />
+              <div id='owners' style={{marginBottom: '10px'}}>
+                <ReusablePeoplePicker 
+                  id={'Owner1'}
+                  title={`${this.strings.owners} (${this.strings.other_than_yourself})`}
+                  instructions={'instructions for peoplepicker'}
+                  lineId={'owners'}
+                  context={this.props.context}
+                  ownerList={ ownerList}
+                  defaultSelectedUsers={ownerList}
+                  onChangeGetOwners={this.getOwners}
+                  currentPage={currentPage}
+                  isCalloutVisible={ this.isCalloutVisible}
+                  getTargetId={this.getButtonID}
+                  
+                />
+                <div style={{marginTop: '5px'}}>
+                  {validateOwnerField(ownerList, this.state.requestingUser, this.state.invalidEmail,{blankfield: `${this.strings.blankField} ${this.strings.please_add_another_owner}`, requestorUser: `${this.strings.invite_yourself} ${this.strings.please_remove_your_name}`, invalidEmail: `${this.strings.isInvalidEmail} ${this.state.invalidEmail}`})}
+                </div>
+              </div>
               </Stack>
             </div>
           <div>
               <Stack horizontal horizontalAlign='space-between'>
-                <ReusableButton text={'previous'} onClick={this.goToPreviousPage}/>
+                <ReusableButton text={'previous'} onClick={this.goToPreviousPage} className={styles.previousbtn}/>
                 <ReusableButton text={'next'} onClick={this.successMessage}/>
               </Stack>
           </div>

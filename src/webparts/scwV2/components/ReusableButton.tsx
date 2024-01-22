@@ -4,6 +4,7 @@ import * as React from 'react';
 
 interface IReusableButtonProps {
 text: string;
+className?: string;
 onClick?: () => void;
 }
 
@@ -17,7 +18,7 @@ export default class ReusableButton extends React.Component<IReusableButtonProps
     
     return (
     <>
-      <PrimaryButton text={this.props.text} onClick={this.props.onClick}/>
+      <PrimaryButton text={this.props.text} onClick={this.props.onClick} className={this.props.className}/>
     </>
     )
   }

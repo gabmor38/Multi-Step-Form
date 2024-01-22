@@ -1,6 +1,7 @@
-import { Icon, Stack } from '@fluentui/react';
+import { IStackTokens, Icon, Stack } from '@fluentui/react';
 import * as React from 'react';
 import styles from './ScwV2.module.scss';
+
 
 
 export const inputValidation = (value: string , strings: {minCharacters: string , blankField: string, removeSpecialChar: string}): JSX.Element | undefined => {
@@ -13,7 +14,7 @@ export const inputValidation = (value: string , strings: {minCharacters: string 
   if (trimmedValue.length >= 1 && trimmedValue.length < 5) {
     return (
       <Stack horizontal horizontalAlign="center">
-        <Icon iconName="Error" className={styles.errorIcon} />
+        <Icon iconName="AlertSolid" className={styles.errorIcon} />
         <p className={styles.fieldInstruction}>
           {strings.minCharacters}
         </p>
@@ -24,7 +25,7 @@ export const inputValidation = (value: string , strings: {minCharacters: string 
 
     return (
       <Stack horizontal horizontalAlign="center">
-      <Icon iconName="Error" className={styles.errorIcon} />
+      <Icon iconName="AlertSolid" className={styles.errorIcon} />
       <p className={styles.fieldInstruction}>
         {strings.blankField}
       </p>
@@ -55,7 +56,7 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
     console.log("Iam blank")
     
     return  <Stack horizontal>
-        <Icon iconName="Error" className={styles.errorIcon} />
+        <Icon iconName="AlertSolid" className={styles.errorIcon} />
         <p className={styles.fieldInstruction}>{strings.blankField}</p>
       </Stack>
     
@@ -65,12 +66,12 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
         <>
         <Stack>
           <Stack horizontal style={{ paddingBottom: "5px" }}>
-            <Icon iconName="Error" className={styles.errorIcon} />
+            <Icon iconName="AlertSolid" className={styles.errorIcon} />
             <p className={styles.fieldInstruction}>{strings.removeSpecialChar} {specialCharFound}</p>
           </Stack>
           
           <Stack horizontal >
-            <Icon iconName="Error" className={styles.errorIcon} />
+            <Icon iconName="AlertSolid" className={styles.errorIcon} />
             <p className={styles.fieldInstruction}>{strings.minCharacters}</p>
           </Stack>
        </Stack>
@@ -79,7 +80,7 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
     }  else {
       return (
         <Stack horizontal >
-       <Icon iconName="Error" className={styles.errorIcon} />
+       <Icon iconName="AlertSolid" className={styles.errorIcon} />
        <p className={styles.fieldInstruction}>{strings.minCharacters}</p>
        </Stack>
       )
@@ -88,7 +89,7 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
     if(charAllowed) {
       return (
         <Stack horizontal >
-           <Icon iconName="Error" className={styles.errorIcon} />
+           <Icon iconName="AlertSolid" className={styles.errorIcon} />
            <p className={styles.fieldInstruction}>{strings.removeSpecialChar} {specialCharFound}</p>
         </Stack>
         )
@@ -99,7 +100,7 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
 
   if (charAllowed) {
     <Stack horizontal>
-         <Icon iconName="Error" className={styles.errorIcon} />
+         <Icon iconName="AlertSolid" className={styles.errorIcon} />
          <p className={styles.fieldInstruction}>{strings.removeSpecialChar} {specialCharFound}</p>
     </Stack>
   }
@@ -138,6 +139,63 @@ export const fieldValidations = (values: Record<string, string> | string[]): Val
  
 }
 
+
+
+export const validateOwnerField = (ownerList: string[], requestingUser: string,  invalidEmail: string, strings: { blankfield: string, requestorUser: string, invalidEmail: string}): JSX.Element | undefined => {
+
+  const sectionStackTokens: IStackTokens = {childrenGap: 5};
+
+
+  if (ownerList.length === 0) {
+    return (
+      
+    <Stack horizontal>
+      <Icon iconName="AlertSolid" className={styles.errorIcon} />
+      <p className={styles.fieldInstruction}>{strings.blankfield}</p>
+    </Stack>
+    )
+  }
+
+  if(requestingUser && invalidEmail) {
+    return (
+      <>   
+        <Stack tokens={sectionStackTokens}>
+          <Stack horizontal>
+            <Icon iconName="AlertSolid" className={styles.errorIcon} />
+            <p className={styles.fieldInstruction}>{strings.requestorUser}</p>
+          </Stack>
+          <Stack horizontal>
+            <Icon iconName="AlertSolid" className={styles.errorIcon} />
+            <p className={styles.fieldInstruction}>{strings.invalidEmail}</p>
+          </Stack>
+        </Stack>
+   </>
+
+    )
+  }
+
+  if ( requestingUser ) {
+    return  ( 
+    <Stack horizontal>
+      <Icon iconName="AlertSolid" className={styles.errorIcon} />
+      <p className={styles.fieldInstruction}>{strings.requestorUser}</p>
+    </Stack>
+    )
+  }
+
+  if ( invalidEmail ) {
+    return  ( 
+    <Stack horizontal>
+      <Icon iconName="AlertSolid" className={styles.errorIcon} />
+      <p className={styles.fieldInstruction}>{strings.invalidEmail}</p>
+    </Stack>
+    )
+  }
+         
+
+}
+
+  
 
 
 
