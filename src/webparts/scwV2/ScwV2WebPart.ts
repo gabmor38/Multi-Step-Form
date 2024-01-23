@@ -6,7 +6,7 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
-import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { ThemeProvider, ThemeChangedEventArgs ,IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ScwV2WebPartStrings';
 import ScwV2 from './components/ScwV2';
@@ -22,6 +22,8 @@ export default class ScwV2WebPart extends BaseClientSideWebPart<IScwV2WebPartPro
 
   
   private _environmentMessage: string = '';
+  private _themeProvider: ThemeProvider;
+  private _themeVariant: IReadonlyTheme | undefined;
   rootUrl: string | undefined;
 
   public render(): void {
@@ -32,7 +34,8 @@ export default class ScwV2WebPart extends BaseClientSideWebPart<IScwV2WebPartPro
         context: this.context,
         prefLang: this.properties.prefLang,
         requestor: this.context.pageContext.user.email,
-        url: this.rootUrl
+        url: this.rootUrl,
+        themeVariant: this._themeVariant,
       }
     );
 
@@ -45,10 +48,29 @@ export default class ScwV2WebPart extends BaseClientSideWebPart<IScwV2WebPartPro
     const pageContext = this.context.pageContext;
     const absoluteWebUrl: string = `${pageContext.web.absoluteUrl}`
     this.rootUrl = absoluteWebUrl.replace(pageContext.web.serverRelativeUrl, '');
+   
     
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
+      this._themeProvider = this.context.serviceScope.consume(
+        ThemeProvider.serviceKey
+      );
+
+      // If it exists, get the theme variant
+      this._themeVariant = this._themeProvider.tryGetTheme();
+      console.debug('Theme variant ::: ', this._themeVariant);
+
+      // Register a handler to be notified if the theme variant changes
+      this._themeProvider.themeChangedEvent.add(
+        this,
+        this._handleThemeChangedEvent
+      );
     });
+  }
+
+  private _handleThemeChangedEvent(args: ThemeChangedEventArgs): void {
+    this._themeVariant = args.theme;
+    this.render();
   }
 
 

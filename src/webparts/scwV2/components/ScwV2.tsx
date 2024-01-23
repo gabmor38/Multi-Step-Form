@@ -16,6 +16,8 @@ import styles from './ScwV2.module.scss';
 import Modals from './Modals';
 import { AadHttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
 import Callouts from './Callouts';
+import { IReadonlyTheme } from '@microsoft/sp-component-base';
+
 
 export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
@@ -71,12 +73,32 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   public goToPreviousPage = (): void => {
 
     const previousPage = this.state.currentPage - 1
-    console.log("nextPage", previousPage)
- 
-    this.setState({
-      currentPage: previousPage
-    })
+
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, invalidEmail, requestingUser } = this.state;
+    const values = {commPurpose,engCommName,frCommName, engDesc, frDesc}
+    
+    
+    const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
+
+  
+    const showModal =  (currentPage === 1  && (ownerList.length === 0 || requestingUser || invalidEmail)) ||
+    (currentPage === 2 && (isLessThanMinLength) || hasSpecialChar || ownerList.length === 0 || requestingUser || invalidEmail);
+
+    
+    
+    if(!showModal  ) {
+      this.setState({
+        currentPage: previousPage
+        
+      })
+    } else {
+      this.setState({
+        showModal: true
+      })
+
+    }
   }
+  
 
 
   public onChangeTextField = (event: React.ChangeEvent<HTMLInputElement>, value: string):void => {
@@ -344,6 +366,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
     const sectionStackTokens: IStackTokens = { childrenGap: 5 };
     
     const labelSpinnerStyles: Partial<ISpinnerStyles> = { root: { padding: 20 } };
+    
 
     
     const progressSteps = [
@@ -354,12 +377,13 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
     const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state;
     // const currentUser: string | undefined = this.props.requestor;
+    const { semanticColors }: IReadonlyTheme = this.props.themeVariant || {};
 
     return (
       <>
      
-      <div>
-        <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} />
+      <div >
+        <ProgressStepsIndicator steps={progressSteps}  currentStep={this.state.currentPage} themeVariant={this.props.themeVariant} />
       </div>
       
 
@@ -475,7 +499,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
           </div>
           <div>
             <Stack horizontal horizontalAlign='space-between'>
-              <ReusableButton text={'previous'} onClick={this.goToPreviousPage}/>
+              <ReusableButton text={'previous'} onClick={this.goToPreviousPage} className={styles.previousbtn}/>
               <ReusableButton text={'next'} onClick={this.goToNextPage}/>
             </Stack>
           </div>
@@ -486,7 +510,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
           <div>CONTENT 2</div>
           <div>
             <ReusablePeoplePicker 
-              id={'owners'}
+              id={'owner'}
               title={'Owners'}
               instructions={'instructions for peoplepicker'}
               lineId={'owners'}
@@ -498,13 +522,14 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
             </div>
           <div>
               <Stack horizontal horizontalAlign='space-between'>
-                <ReusableButton text={'previous'} onClick={this.goToPreviousPage}/>
+                <ReusableButton text={'previous'} onClick={this.goToPreviousPage} className={styles.previousbtn}/>
                 <ReusableButton text={'next'} onClick={this.goToNextPage}/>
               </Stack>
           </div>
         </>
       
-      )} 
+      )}
+
       {this.state.isLoading &&
         (<Spinner label={ this.strings.submitting_your_information } labelPosition="right"   size={ SpinnerSize.large } styles={labelSpinnerStyles}/>)
 
