@@ -6,6 +6,7 @@ import styles from './ScwV2.module.scss';
 import parse from 'html-react-parser';
 
 
+
 interface IModalsProps {
   engName: string;
   frCommName: string;
@@ -122,7 +123,7 @@ public strings = SelectLanguage(this.props.prefLang);
   }
 
   
-  public renderSecondPageMessage = ():string | JSX.Element => {
+  public renderSecondPageMessage = ():string  => {
 
     const { ownerList, requestingUser, invalidUser } = this.props;
 
@@ -147,13 +148,14 @@ public strings = SelectLanguage(this.props.prefLang);
         if(resultValues.length > 1) {
           
           const tolower = resultValues.slice(-1)[0];
-          const combinedMessage = resultValues.slice(0, -1).join(`,`) + `${this.strings.and}` + tolower.charAt(0).toLowerCase() + tolower.slice(1)//on last slice only lower first character
+          message = resultValues.slice(0, -1).join(`,`) + `${this.strings.and}` + tolower.charAt(0).toLowerCase() + tolower.slice(1)//on last slice only lower first character
           
-          console.log("CM",combinedMessage);
-          message = `${parse(combinedMessage)}`;
          }  
-         else  if(resultValues.length === 1) { 
+         else  if(resultValues.length === 1 && item.message === `${this.strings.invalidEmail} ${invalidUserBold} ${this.strings.is_not_valid}`) { 
           console.log("res", resultValues)
+          message = `${this.strings.you_must} ${resultValues[0]}`;
+         }
+         else if (resultValues.length === 1) {
           message = resultValues[0];
          }
       }
@@ -220,7 +222,7 @@ public strings = SelectLanguage(this.props.prefLang);
   public render(): React.ReactElement<IModalsProps>{
 
     const firstPageErrorMessage = this.renderFirstPageMessage();
-    const secondPageErrorMessage = this.renderSecondPageMessage();
+    const secondPageErrorMessage = parse(this.renderSecondPageMessage());
     const thirdPageErrorMessage = this.renderCombinedMessage();
 
     const iconStyles: Partial<IIconStyles> = { 

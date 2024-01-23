@@ -16,7 +16,7 @@ import styles from './ScwV2.module.scss';
 import Modals from './Modals';
 import { AadHttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
 import Callouts from './Callouts';
-import { IReadonlyTheme } from '@microsoft/sp-component-base';
+//import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 
 export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
@@ -377,7 +377,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
     const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state;
     // const currentUser: string | undefined = this.props.requestor;
-    const { semanticColors }: IReadonlyTheme = this.props.themeVariant || {};
+    //const { semanticColors }: IReadonlyTheme = this.props.themeVariant || {};
 
     return (
       <>
