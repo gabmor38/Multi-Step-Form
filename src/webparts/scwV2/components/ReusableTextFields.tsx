@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IButtonStyles, IIconProps, IconButton, Label, Stack, TextField} from '@fluentui/react';
+import { IButtonStyles, IIconProps, IconButton, Label, Stack,TextField} from '@fluentui/react';
 import * as React from 'react';
 
 interface IReusableTextFieldsProps {
@@ -9,7 +9,7 @@ interface IReusableTextFieldsProps {
   title: string;
   label: string;
   instructions?: string;
-  description: string;
+  description?: string;
   multiline: boolean;
   defaultValue: string;
   validateOnLoad: boolean;
@@ -23,6 +23,7 @@ interface IReusableTextFieldsProps {
   getTargetId?: (event: any) => void ;
   targetId?: string;
   buttonId?: string;
+  charCountId?: string;
   
 }
 
@@ -55,6 +56,14 @@ export default class ReusableTextFields extends React.Component<IReusableTextFie
         }
     }
 
+    const renderDescription =():JSX.Element => {
+      return (
+        <Stack id={this.props.charCountId} horizontalAlign='end' style={{fontSize:'12px'}}>
+          {this.props.description}
+        </Stack>
+      )
+    }
+
    
     
     return (
@@ -69,7 +78,7 @@ export default class ReusableTextFields extends React.Component<IReusableTextFie
           }
           </Label>
         </Stack>
-        <TextField {...this.props} styles={charCountStyles.characterLimitStyle}
+        <TextField {...this.props} styles={charCountStyles.characterLimitStyle} onRenderDescription={renderDescription}
         />
       </div>
     </>

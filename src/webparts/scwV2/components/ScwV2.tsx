@@ -279,45 +279,72 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
         getlineId.classList.remove(styles.errorBorder);
       }
     };
+
+    const addCharCountErrorColor = (charCountId: string) => {
+      const getcharCountId = document.getElementById(charCountId)
+      
+      if (getcharCountId){
+        getcharCountId.classList.add(styles.errorCharCount);
+      }
+    };
+  
+    const removeCharCountErrorColor = (charCountId: string) => {
+      const getcharCountId = document.getElementById(charCountId);
+      if (getcharCountId) {
+        getcharCountId.classList.remove(styles.errorCharCount);
+      }
+    };
+
+    
   
     switch (eventName) {
       case "commPurpose":
         if (value.length < 5) {
           addErrorBorder("commPurpose");
+          addCharCountErrorColor('commPurposeCharCount')
         } else {
           removeErrorBorder("commPurpose");
+          removeCharCountErrorColor ('commPurposeCharCount')
         }
         break;
   
       case "engCommName":
         if (value.length < 5 || charAllowed) {
           addErrorBorder("engCommName");
+          addCharCountErrorColor('engCommNameCharCount')
         } else {
           removeErrorBorder("engCommName");
+          removeCharCountErrorColor ('engCommNameCharCount')
         }
         break;
   
       case "frCommName":
         if (value.length < 5 || charAllowed) {
           addErrorBorder("frCommName");
+          addCharCountErrorColor('frCommNameCharCount')
         } else {
           removeErrorBorder("frCommName");
+          removeCharCountErrorColor ('frCommNameCharCount')
         }
         break;
   
       case "engDesc":
         if (value.length < 5) {
           addErrorBorder("engDesc");
+          addCharCountErrorColor("engDescCharCount")
         } else {
           removeErrorBorder("engDesc");
+          removeCharCountErrorColor("engDescCharCount")
         }
         break;
   
       case "frDesc":
         if (value.length < 5) {
           addErrorBorder("frDesc");
+          addCharCountErrorColor("frDescCharCount")
         } else {
           removeErrorBorder("frDesc");
+          addCharCountErrorColor("frDescCharCount")
         }
         break;
   
@@ -409,23 +436,29 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
           <div >CONTENT 1
             <div>
               <Stack tokens={sectionStackTokens}>
-                <ReusableTextFields
-                    id={'commPurpose'}
-                    lineId={'commPurpose'}
-                    name={'commPurpose'}
-                    title={'Community Purpose'}
-                    label={'these are instructions'}
-                    instructions={"instructions"}
-                    description={`${commPurpose.length}/500`}
-                    multiline
-                    defaultValue={this.state.commPurpose}
-                    validateOnLoad={false}
-                    maxLength={500}
-                    rows={3}
-                    onChange={this.onChangeTextField}
-                    onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                  
-                />
+                <div>
+                  <ReusableTextFields
+                      id={'commPurpose'}
+                      lineId={'commPurpose'}
+                      name={'commPurpose'}
+                      title={'Community Purpose'}
+                      label={'these are instructions'}
+                      instructions={"instructions"}
+                      description={`${commPurpose.length}/500`}
+                      multiline
+                      defaultValue={this.state.commPurpose}
+                      validateOnLoad={false}
+                      maxLength={500}
+                      rows={3}
+                      onChange={this.onChangeTextField}
+                      onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
+                      charCountId={"commPurposeCharCount"}
+                  />
+                </div>
+                {/* <Stack horizontalAlign='end' >
+                  <Text id={"commPurposeChar"} variant="small">{`${commPurpose.length}/500`}</Text>
+                </Stack> */}
+
                 <ReusableTextFields
                     id={'engCommName'}
                     lineId={'engCommName'}
@@ -441,8 +474,10 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     rows={1}
                     onChange={this.onChangeTextField}
                     onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                  
+                    charCountId={"engCommNameCharCount"}
                 />
+
+
                 <ReusableTextFields
                     id={'frCommName'}
                     lineId={'frCommName'}
@@ -451,6 +486,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     label={'these are instructions'}
                     instructions={"instructions"}
                     description={`${frCommName.length}/100`}
+                    charCountId={"frCommNameCharCount"}
                     multiline
                     defaultValue={frCommName}
                     validateOnLoad={false}
@@ -475,7 +511,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     rows={1}
                     onChange={this.onChangeTextField}
                     onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                  
+                    charCountId={"engDescCharCount"}
                 />
                 <ReusableTextFields
                     id={'frDesc'}
@@ -492,7 +528,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                     rows={1}
                     onChange={this.onChangeTextField}
                     onGetErrorMessage={(frDesc) => inputValidation(frDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
-                  
+                    charCountId={"frDescCharCount"}
                 />
               </Stack>
             </div>
@@ -558,6 +594,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
+                  charCountId={"commPurposeCharCount"}
               />
               <ReusableTextFields
                   id={'engCommName'}
@@ -577,6 +614,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   onGetErrorMessage={(engCommName) => validateSpecialCharFields(engCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
+                  charCountId={"engCommNameCharCount"}
               />
 
               <ReusableTextFields
@@ -597,6 +635,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   onGetErrorMessage={(frCommName) => validateSpecialCharFields (frCommName, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
+                  charCountId={"frCommNameDescCharCount"}
               />
               <ReusableTextFields
                   id={'engDesc'}
@@ -616,6 +655,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   onGetErrorMessage={(engDesc) => inputValidation(engDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
+                  charCountId={"engDescCharCount"}
               />
               <ReusableTextFields
                   id={'frDesc'}
@@ -635,6 +675,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                   onGetErrorMessage={(frDesc) => inputValidation(frDesc, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                   isCalloutVisible={ this.isCalloutVisible}
                   getTargetId={this.getButtonID}
+                  charCountId={"frDescCharCount"}
               />
               <div id='owners' style={{marginBottom: '10px'}}>
                 <ReusablePeoplePicker 

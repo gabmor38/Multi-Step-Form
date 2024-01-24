@@ -58,6 +58,7 @@ export default class ScwV2WebPart extends BaseClientSideWebPart<IScwV2WebPartPro
 
       // If it exists, get the theme variant
       this._themeVariant = this._themeProvider.tryGetTheme();
+      
       console.debug('Theme variant ::: ', this._themeVariant);
 
       // Register a handler to be notified if the theme variant changes

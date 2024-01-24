@@ -132,15 +132,25 @@
  }
  
  .ownerError span  {
-         color: #C61515;
-         font-weight: 700;
-         font-size: 12px;
+    color: #C61515;
+    font-weight: 700;
+    font-size: 12px;
   
  }
  
  .ownerError i {
-     color: #C61515;
-     font-weight: 700;
-     font-size: 16px;
+    color: #C61515;
+    font-weight: 700;
+    font-size: 16px;
  
+ }
+ .errorCharCount {
+  color: #C61515;
+  font-weight: 700;
+ }
+
+ :global {
+  .ms-TextField-errorMessage {
+    margin-top: -18px;
+  }
  }
