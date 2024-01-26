@@ -40,7 +40,8 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       isLoading: false,
       validationStatus: 0,
       showCallout: false,
-      targetId: ''
+      targetId: '',
+      isError: []
     }; 
   }
 
@@ -48,11 +49,23 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
 
     const nextPage = this.state.currentPage + 1;
     const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, invalidEmail, requestingUser } = this.state;
-    const values = {commPurpose,engCommName,frCommName, engDesc, frDesc}
+    const values = {commPurpose,engCommName,frCommName, engDesc, frDesc};
+    const stateValues=[{commPurpose: commPurpose, engCommName: engCommName, frCommName: frCommName, engDesc:engDesc, frDesc:frDesc}]
+    const keys = Object.keys(stateValues[0]);
+    const arrayVal = Object.values(stateValues[0]);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = arrayVal[i];
+
+      this.handleSideLineErrorValidation(key, value);
+      
+    }
+
+    this.isBlankFieldError(values);
+
+    const {isLessThanMinLength, hasSpecialChar } = fieldValidations(values);
     
-    console.log("nextPage", nextPage)
-    
-    const {isLessThanMinLength, hasSpecialChar} = fieldValidations(values);
 
     const showModal = isLessThanMinLength || hasSpecialChar || (currentPage === 1  && (ownerList.length === 0 || requestingUser || invalidEmail))
     
@@ -68,6 +81,39 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       })
     }
  
+  }
+
+  // public isBlankFieldError = (values: any): void => {
+  //   console.log("values", values);
+  //   let emptyState = {};
+  //   for (const [key, value] of Object.entries(values)) {
+  //     console.log(`${key}: ${value}`);
+  //     if ( value === '') {
+  //       emptyState = {...emptyState, [key]: true}
+  //       this.setState({
+  //         ...this.state,
+  //         isError: [emptyState]
+  //       })
+  //     }
+  //   }
+     
+  // }
+  public isBlankFieldError = (values: any): void => {
+    console.log("values", values);
+    const emptyState = [];
+
+  
+    for (const [key, value] of Object.entries(values)) {
+      console.log(`${key}: ${value}`);
+      if ( value === '') {
+        emptyState.push(key)
+        this.setState({
+          ...this.state,
+          isError: emptyState
+        })
+      }
+    }
+     
   }
 
   public goToPreviousPage = (): void => {
@@ -386,7 +432,7 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
   
   public render(): React.ReactElement<IScwV2Props> {
 
-
+    console.log("isError state", this.state.isError)
     console.log("commPurpose- state", this.state.commPurpose)
     console.log("owners", this.state.ownerList, this.state.requestingUser, this.state.invalidEmail)
 
@@ -402,9 +448,17 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
       {id: 3, title: "Review & Submit", description: "Review & Submit"}
     ]
 
-    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId} = this.state;
+    const {commPurpose, engCommName, frCommName, engDesc, frDesc, ownerList, currentPage, showModal, showCallout, targetId, isError} = this.state;
     // const currentUser: string | undefined = this.props.requestor;
     //const { semanticColors }: IReadonlyTheme = this.props.themeVariant || {};
+
+    const errors =  isError;
+    console.log("errors",errors)
+    // const val = Object.keys(errors);
+    // console.log("val", val);
+
+    
+  
 
     return (
       <>
@@ -454,6 +508,12 @@ export default class ScwV2 extends React.Component<IScwV2Props, ISCWState> {
                       onGetErrorMessage={(commPurpose) => inputValidation(commPurpose, {minCharacters: this.strings.minCharacters, blankField: this.strings.blankField, removeSpecialChar: this.strings.remove_special_char})}
                       charCountId={"commPurposeCharCount"}
                   />
+
+                  {isError.includes("commPurpose") && (
+                    <div>Hello</div>
+                  )}
+              
+                  
                 </div>
                 {/* <Stack horizontalAlign='end' >
                   <Text id={"commPurposeChar"} variant="small">{`${commPurpose.length}/500`}</Text>

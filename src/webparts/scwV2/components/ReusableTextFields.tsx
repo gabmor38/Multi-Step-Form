@@ -80,6 +80,8 @@ export default class ReusableTextFields extends React.Component<IReusableTextFie
         </Stack>
         <TextField {...this.props} styles={charCountStyles.characterLimitStyle} onRenderDescription={renderDescription}
         />
+
+        
       </div>
     </>
     )

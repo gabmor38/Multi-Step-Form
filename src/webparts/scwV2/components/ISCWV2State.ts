@@ -13,5 +13,6 @@ export interface ISCWState {
   validationStatus: number,
   showCallout: boolean;
   targetId: string;
+  isError: string[];
 
 }

@@ -2,6 +2,22 @@ import { IStackTokens, Icon, Stack } from '@fluentui/react';
 import * as React from 'react';
 import styles from './ScwV2.module.scss';
 
+export const inputIsBlank = (value: string, strings:{ blankField: string}): JSX.Element | undefined => { 
+
+  if (value.trim() === '') {
+    
+    return (
+      <Stack horizontal horizontalAlign="center">
+          <Icon iconName="AlertSolid" className={styles.errorIcon} />
+          <p className={styles.fieldInstruction}>
+            {strings.blankField}
+          </p>
+        </Stack>
+    )
+  } 
+
+}
+
 
 
 export const inputValidation = (value: string , strings: {minCharacters: string , blankField: string, removeSpecialChar: string}): JSX.Element | undefined => {
@@ -112,6 +128,7 @@ export const validateSpecialCharFields = (value: string, strings: { minCharacter
 interface ValidationErrors {
   isLessThanMinLength: boolean;
   hasSpecialChar: boolean;
+ 
 }
 
 
@@ -120,6 +137,7 @@ export const fieldValidations = (values: Record<string, string> | string[]): Val
 
 
       const validateStringLength = (value: string, minLength: number): boolean => value.length >= minLength;
+      // const isBlankField = Object.values(values).some((value) => value === '');
       
       const isLessThanMinLength = Object.values(values).some((value) => !validateStringLength(value, 5));
       const hasSpecialChar = Object.entries(values).some(
@@ -134,7 +152,7 @@ export const fieldValidations = (values: Record<string, string> | string[]): Val
 
   return {
       isLessThanMinLength,
-      hasSpecialChar
+      hasSpecialChar,
   }
  
 }
